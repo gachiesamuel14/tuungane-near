@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tuungane — meet people near you in Kenya</title>
+<meta name="description" content="Location-based matchmaking for Kenya. Profiles, nearby discovery, likes, matches, and chat." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,700&family=Outfit:wght@360;480;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --ink: #1c1410;
+  --paper: #f6efe6;
+  --card: #fffaf4;
+  --clay: #c4512c;
+  --clay-deep: #8d3118;
+  --gold: #e2b15a;
+  --leaf: #2f6b4f;
+  --line: #eadfd2;
+  --muted: #7a6b60;
+  --shadow: 0 18px 50px rgba(60, 28, 12, .12);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: Outfit, system-ui, sans-serif;
+  background:
+    radial-gradient(900px 420px at 90% -10%, #f3d7b8 0%, transparent 60%),
+    radial-gradient(700px 380px at -10% 20%, #f7e2c4 0%, transparent 55%),
+    var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; }
+.app { max-width: 1120px; margin: 0 auto; padding: 18px 18px 80px; }
+.top {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 2px 18px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.mark {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(145deg, var(--clay), #e08a3c);
+  display: grid; place-items: center; color: white; font-weight: 700;
+  box-shadow: 0 8px 18px rgba(196,81,44,.35);
+}
+.brand h1 { font-family: Fraunces, serif; font-size: 22px; margin: 0; letter-spacing: -.02em; }
+.brand small { display: block; color: var(--muted); font-size: 12px; margin-top: 1px; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; }
+.nav button, .ghost, .solid {
+  border: 1px solid var(--line); background: white; border-radius: 999px;
+  padding: 8px 14px; color: var(--ink);
+}
+.nav button.active, .solid { background: var(--ink); color: white; border-color: var(--ink); }
+.hero {
+  display: grid; grid-template-columns: 1.15fr .85fr; gap: 22px; align-items: stretch;
+}
+.panel {
+  background: var(--card); border: 1px solid var(--line); border-radius: 28px;
+  box-shadow: var(--shadow); padding: 28px;
+}
+.kicker { color: var(--clay-deep); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; font-size: 12px; }
+h2 { font-family: Fraunces, serif; font-weight: 560; letter-spacing: -.03em; margin: 8px 0 10px; font-size: clamp(32px, 5vw, 54px); line-height: .98; }
+.lede { color: #4d4038; font-size: 17px; line-height: 1.5; max-width: 52ch; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0; }
+.chip { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; font-size: 13px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.solid { background: var(--clay); border-color: var(--clay); color: white; padding: 12px 18px; border-radius: 999px; }
+.ghost { background: transparent; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 22px; }
+.stat { background: #fff7ee; border-radius: 16px; padding: 12px; }
+.stat b { display: block; font-family: Fraunces, serif; font-size: 22px; }
+.stat span { color: var(--muted); font-size: 12px; }
+.card-stack { position: relative; min-height: 460px; }
+.person {
+  background: white; border-radius: 24px; overflow: hidden; border: 1px solid var(--line);
+  box-shadow: var(--shadow); position: relative;
+}
+.face {
+  height: 250px; display: grid; place-items: end start; padding: 16px; color: white;
+  background-size: cover; background-position: center;
+}
+.face strong { font-family: Fraunces, serif; font-size: 28px; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
+.meta { padding: 14px 16px 16px; }
+.meta p { margin: 6px 0 10px; color: #4d4038; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { background: #f6efe6; border-radius: 999px; padding: 4px 8px; font-size: 12px; }
+.actions { display: flex; justify-content: center; gap: 12px; margin-top: 14px; }
+.actions button {
+  width: 58px; height: 58px; border-radius: 50%; border: 1px solid var(--line); background: white; font-size: 22px;
+}
+.actions .like { background: var(--leaf); color: white; border-color: var(--leaf); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.form { display: grid; gap: 10px; }
+label { font-size: 13px; color: #5c4e45; display: grid; gap: 4px; }
+input, select, textarea {
+  width: 100%; border: 1px solid var(--line); background: white; border-radius: 12px; padding: 10px 12px;
+}
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hidden { display: none !important; }
+.toast {
+  position: fixed; bottom: 18px; right: 18px; background: var(--ink); color: white;
+  padding: 12px 14px; border-radius: 14px; max-width: 280px; display: none; z-index: 5;
+}
+.chat-list { display: grid; gap: 8px; }
+.bubble { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; }
+.me { background: #2f6b4f; color: white; margin-left: 40px; }
+.them { margin-right: 40px; }
+.note { font-size: 13px; color: var(--muted); }
+.warn { background: #fff4ea; border: 1px solid #f0d2b8; border-radius: 14px; padding: 10px 12px; font-size: 13px; }
+.mapbar { height: 8px; background: #efe4d8; border-radius: 99px; overflow: hidden; margin: 8px 0 12px; }
+.mapbar span { display: block; height: 100%; background: linear-gradient(90deg, var(--clay), var(--gold)); }
+footer { margin-top: 28px; color: var(--muted); font-size: 12px; }
+@media (max-width: 860px) {
+  .hero, .two { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="mark">T</div>
+      <div>
+        <h1>Tuungane</h1>
+        <small>Near you, across Kenya · 18+</small>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </header>
+  <main id="view"></main>
+  <footer>Demo only. Profiles and chats stay in this browser. Real GPS is used when you allow it. Meet in public places. Never send money to someone you have not met.</footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const COUNTIES = ["Nairobi","Mombasa","Kisumu","Kiambu","Nakuru","Uasin Gishu","Nyeri","Machakos","Kilifi","Kakamega"];
+const TRIBES = ["Any","Kikuyu","Luo","Luhya","Kalenjin","Kamba","Kisii","Meru","Mijikenda","Somali","Other"];
+const RELIGIONS = ["Any","Christian","Muslim","Traditional","None / spiritual","Prefer not to say"];
+const MODES = ["All","Student","Professional","Church","Mtaani"];
+const SEED = [
+  {id:"a1",name:"Amina",age:26,county:"Mombasa",town:"Nyali",tribe:"Mijikenda",religion:"Muslim",mode:"Professional",bio:"Coast sunsets, pilau, and long walks on the beach. Looking for someone kind and consistent.", interests:["Beach","Food","Travel"], lat:-4.0435, lng:39.6682, gender:"woman", looking:"men"},
+  {id:"a2",name:"Brian",age:29,county:"Nairobi",town:"Kilimani",tribe:"Kikuyu",religion:"Christian",mode:"Professional",bio:"Product designer. Saturdays are for art cafes in Lavington and a good playlist.", interests:["Design","Coffee","Music"], lat:-1.2921, lng:36.7872, gender:"man", looking:"women"},
+  {id:"a3",name:"Faith",age:23,county:"Kiambu",town:"Ruiru",tribe:"Kikuyu",religion:"Christian",mode:"Student",bio:"Campus life, gospel nights, and someone who can laugh at my cooking attempts.", interests:["Church","Books","Hiking"], lat:-1.1489, lng:36.9606, gender:"woman", looking:"men"},
+  {id:"a4",name:"Otieno",age:31,county:"Kisumu",town:"Milimani",tribe:"Luo",religion:"Christian",mode:"Professional",bio:"Lake views, nyama choma, and honest conversations. I coach a kids football side.", interests:["Football","Food","Family"], lat:-0.0917, lng:34.7680, gender:"man", looking:"women"},
+  {id:"a5",name:"Chebet",age:27,county:"Uasin Gishu",town:"Eldoret",tribe:"Kalenjin",religion:"Christian",mode:"Professional",bio:"Morning runs, tea farms on weekends, and a soft spot for people who keep their word.", interests:["Running","Travel","Tea"], lat:0.5143, lng:35.2698, gender:"woman", looking:"men"},
+  {id:"a6",name:"Wanjiku",age:24,county:"Nairobi",town:"Westlands",tribe:"Kikuyu",religion:"Christian",mode:"Student",bio:"Sheng, film nights, and chapati Fridays. Student mode, serious about character.", interests:["Films","Sheng","Food"], lat:-1.2673, lng:36.8110, gender:"woman", looking:"everyone"},
+  {id:"a7",name:"Hassan",age:33,county:"Nairobi",town:"Eastleigh",tribe:"Somali",religion:"Muslim",mode:"Professional",bio:"Business in textiles. I value faith, family, and a calm home.", interests:["Business","Faith","Travel"], lat:-1.2736, lng:36.8492, gender:"man", looking:"women"},
+  {id:"a8",name:"Achieng",age:28,county:"Nairobi",town:"Karen",tribe:"Luo",religion:"Christian",mode:"Church",bio:"Choir, community work, and slow Sundays. Looking for a grounded partner.", interests:["Church","Volunteering","Music"], lat:-1.3197, lng:36.7080, gender:"woman", looking:"men"},
+  {id:"a9",name:"Kip",age:25,county:"Nakuru",town:"Milimani",tribe:"Kalenjin",religion:"Christian",mode:"Mtaani",bio:"Boda by day, studio sessions by night. If you can dance, we already match.", interests:["Music","Dance","Street food"], lat:-0.3031, lng:36.0800, gender:"man", looking:"women"},
+  {id:"a10",name:"Neema",age:30,county:"Machakos",town:"Athi River",tribe:"Kamba",religion:"Christian",mode:"Professional",bio:"Engineer. I like quiet dinners and road trips toward the hills.", interests:["Engineering","Road trips","Cooking"], lat:-1.4563, lng:36.9783, gender:"woman", looking:"men"}
+];
+const KEY = "tuungane-v1";
+const state = load();
+function load() {
+  const raw = localStorage.getItem(KEY);
+  if (raw) return JSON.parse(raw);
+  return {
+    user: null,
+    likes: [],
+    passes: [],
+    matches: [],
+    chats: {},
+    reports: [],
+    premium: false,
+    notifs: []
+  };
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(toast._id);
+  toast._id = setTimeout(() => t.style.display = "none", 2800);
+}
+function haversine(a, b) {
+  const R = 6371, dLat = (b.lat-a.lat)*Math.PI/180, dLng = (b.lng-a.lng)*Math.PI/180;
+  const s = Math.sin(dLat/2)**2 + Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+}
+function colorFor(name) {
+  const hues = [18, 28, 150, 200, 340, 42];
+  const h = hues[name.charCodeAt(0) % hues.length];
+  return `linear-gradient(160deg, hsl(${h} 62% 42%), hsl(${(h+30)%360} 50% 28%))`;
+}
+function go(screen) { state.screen = screen; save(); render(); }
+function nav() {
+  const items = state.user
+    ? [["discover","Discover"],["matches","Matches"],["chat","Chat"],["profile","Profile"],["safety","Safety"]]
+    : [["home","Home"],["join","Join"]];
+  document.getElementById("nav").innerHTML = items.map(([id,label]) =>
+    `<button class="${state.screen===id?"active":""}" data-go="${id}">${label}</button>`
+  ).join("") + (state.user ? `<button data-go="logout">Log out</button>` : "");
+  document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => {
+    if (b.dataset.go === "logout") { state.user = null; save(); go("home"); toast("Logged out"); return; }
+    go(b.dataset.go);
+  });
+}
+function nearby() {
+  const me = state.user;
+  if (!me) return [];
+  return SEED.filter(p => {
+    if (state.passes.includes(p.id) || state.likes.includes(p.id)) return false;
+    if (me.looking === "women" && p.gender !== "woman") return false;
+    if (me.looking === "men" && p.gender !== "man") return false;
+    const f = me.filters || {};
+    if (f.county && f.county !== "Any" && p.county !== f.county) return false;
+    if (f.tribe && f.tribe !== "Any" && p.tribe !== f.tribe) return false;
+    if (f.religion && f.religion !== "Any" && p.religion !== f.religion) return false;
+    if (f.mode && f.mode !== "All" && p.mode !== f.mode) return false;
+    if (p.age < (f.minAge||18) || p.age > (f.maxAge||45)) return false;
+    const d = haversine(me, p);
+    p.distance = d;
+    if (d > (f.km || 80)) return false;
+    return true;
+  }).sort((a,b) => a.distance - b.distance);
+}
+function like(id) {
+  if (!state.likes.includes(id)) state.likes.push(id);
+  const mutual = Math.random() > 0.35;
+  if (mutual && !state.matches.includes(id)) {
+    state.matches.push(id);
+    state.chats[id] = state.chats[id] || [{from:"them", text:"Habari! Saw you nearby. Karibu, tell me about your week."}];
+    state.notifs.unshift("New match nearby");
+    toast("It's a match. Karibu!");
+  } else toast("Liked. We'll tell you if they like you back.");
+  save(); render();
+}
+function pass(id) { state.passes.push(id); save(); render(); }
+function render() {
+  nav();
+  const v = document.getElementById("view");
+  const s = state.screen || (state.user ? "discover" : "home");
+  if (s === "home") v.innerHTML = home();
+  else if (s === "join") v.innerHTML = join();
+  else if (!state.user) { v.innerHTML = join(); }
+  else if (s === "discover") v.innerHTML = discover();
+  else if (s === "matches") v.innerHTML = matches();
+  else if (s === "chat") v.innerHTML = chat();
+  else if (s === "profile") v.innerHTML = profile();
+  else if (s === "safety") v.innerHTML = safety();
+  bind();
+}
+function home() {
+  return `<section class="hero">
+    <div class="panel">
+      <div class="kicker">Location-based · Kenya</div>
+      <h2>Meet someone close enough to actually meet.</h2>
+      <p class="lede">Tuungane matches people by distance, county, age, interests, and the kind of life they are living — student, professional, church, or mtaani. Sheng welcome. M-Pesa later.</p>
+      <div class="chips"><span class="chip">Nairobi</span><span class="chip">Mombasa</span><span class="chip">Kisumu</span><span class="chip">Kiambu</span><span class="chip">Nakuru</span><span class="chip">Eldoret</span></div>
+      <div class="row">
+        <button class="solid" data-go="join">Create a profile</button>
+        <button class="ghost" data-go="join">I already have one</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>10</b><span>sample people nearby</span></div>
+        <div class="stat"><b>GPS</b><span>or county fallback</span></div>
+        <div class="stat"><b>18+</b><span>safety-first demo</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="kicker">How it works</div>
+      <h2 style="font-size:32px">Four steps, then a chat.</h2>
+      <p>1. Register and set a profile with photos, age, bio, and mode.</p>
+      <p>2. Allow location. We rank people with a haversine distance on your coordinates.</p>
+      <p>3. Filter by county, km, age, community, religion, or lifestyle.</p>
+      <p>4. Like, match, and chat. Report anyone who feels off.</p>
+      <div class="warn">This demo keeps data on your device. A production version needs auth, photo storage, realtime chat, and M-Pesa — outlined in the repo README.</div>
+    </div>
+  </section>`;
+}
+function join() {
+  return `<section class="panel" style="max-width:720px;margin:0 auto">
+    <div class="kicker">Registration</div>
+    <h2 style="font-size:36px">Set up your profile</h2>
+    <p class="note">Must be 18 or older. Location is requested after you join.</p>
+    <form class="form" id="join-form">
+      <div class="two">
+        <label>Name<input name="name" required placeholder="Your first name" /></label>
+        <label>Age<input name="age" type="number" min="18" max="70" value="24" required /></label>
+      </div>
+      <div class="two">
+        <label>I am<select name="gender"><option>woman</option><option>man</option><option>other</option></select></label>
+        <label>Looking for<select name="looking"><option value="men">men</option><option value="women">women</option><option value="everyone">everyone</option></select></label>
+      </div>
+      <div class="two">
+        <label>County<select name="county">${COUNTIES.map(c=>`<option>${c}</option>`).join("")}</select></label>
+        <label>Town<input name="town" placeholder="Kilimani, Nyali..." required /></label>
+      </div>
+      <div class="two">
+        <label>Community (optional)<select name="tribe">${TRIBES.map(c=>`<option>${c}</option>`).join("")}</select></label>
+        <label>Religion<select name="religion">${RELIGIONS.map(c=>`<option>${c}</option>`).join("")}</select></label>
+      </div>
+      <label>Mode<select name="mode">${MODES.filter(m=>m!=="All").map(c=>`<option>${c}</option>`).join("")}</select></label>
+      <label>Bio<textarea name="bio" rows="3" required placeholder="What should someone nearby know?"></textarea></label>
+      <label>Interests, comma separated<input name="interests" placeholder="chapati, hiking, gospel" /></label>
+      <label>Photo note<input name="photo" placeholder="Describe a photo you'd upload — demo stores text only" /></label>
+      <button class="solid" type="submit">Join and find people nearby</button>
+    </form>
+  </section>`;
+}
+function discover() {
+  const people = nearby();
+  const f = state.user.filters || {county:"Any", tribe:"Any", religion:"Any", mode:"All", minAge:18, maxAge:40, km:80};
+  const p = people[0];
+  const card = p ? `<article class="person">
+      <div class="face" style="background:${colorFor(p.name)}">
+        <strong>${p.name}, ${p.age}</strong>
+      </div>
+      <div class="meta">
+        <div class="note">${p.town}, ${p.county} · ${p.distance.toFixed(1)} km · ${p.mode}</div>
+        <div class="mapbar"><span style="width:${Math.max(8, 100 - p.distance)}%"></span></div>
+        <p>${p.bio}</p>
+        <div class="tags">${p.interests.map(i=>`<span class="tag">${i}</span>`).join("")}<span class="tag">${p.tribe}</span><span class="tag">${p.religion}</span></div>
+      </div>
+    </article>
+    <div class="actions">
+      <button data-pass="${p.id}" title="Pass">✕</button>
+      <button class="like" data-like="${p.id}" title="Like">♥</button>
+    </div>` : `<div class="person"><div class="meta"><h2 style="font-size:28px">No one in this radius.</h2><p>Widen distance or clear a filter. Sample people are placed in real Kenyan towns.</p></div></div>`;
+  return `<section class="hero">
+    <div>
+      <div class="panel" style="margin-bottom:12px">
+        <div class="kicker">Your point</div>
+        <strong>${state.user.town}, ${state.user.county}</strong>
+        <div class="note">${state.user.lat.toFixed(4)}, ${state.user.lng.toFixed(4)} · ${state.user.locSource}</div>
+        <div class="row" style="margin-top:10px">
+          <button class="ghost" id="locate">Refresh GPS</button>
+          <button class="ghost" id="premium">${state.premium ? "Premium on" : "Try premium"}</button>
+        </div>
+      </div>
+      <div class="card-stack">${card}</div>
+    </div>
+    <form class="panel form" id="filters">
+      <div class="kicker">Filters</div>
+      <h2 style="font-size:28px">Who should we show?</h2>
+      <label>County<select name="county"><option>Any</option>${COUNTIES.map(c=>`<option ${f.county===c?"selected":""}>${c}</option>`).join("")}</select></label>
+      <label>Max distance (km)<input name="km" type="number" min="2" max="500" value="${f.km||80}" /></label>
+      <div class="two">
+        <label>Min age<input name="minAge" type="number" value="${f.minAge||18}" /></label>
+        <label>Max age<input name="maxAge" type="number" value="${f.maxAge||40}" /></label>
+      </div>
+      <label>Community<select name="tribe">${TRIBES.map(c=>`<option ${f.tribe===c?"selected":""}>${c}</option>`).join("")}</select></label>
+      <label>Religion<select name="religion">${RELIGIONS.map(c=>`<option ${f.religion===c?"selected":""}>${c}</option>`).join("")}</select></label>
+      <label>Lifestyle<select name="mode">${MODES.map(c=>`<option ${f.mode===c?"selected":""}>${c}</option>`).join("")}</select></label>
+      <button class="solid" type="submit">Apply filters</button>
+      <p class="note">${people.length} people match. Community is optional and never required.</p>
+    </form>
+  </section>`;
+}
+function matches() {
+  const list = state.matches.map(id => SEED.find(p => p.id === id)).filter(Boolean);
+  return `<section class="panel">
+    <div class="kicker">Matches</div>
+    <h2 style="font-size:36px">${list.length ? "People who liked you back" : "No matches yet"}</h2>
+    <div class="grid">${list.map(p => `<article class="person"><div class="face" style="height:140px;background:${colorFor(p.name)}"><strong>${p.name}</strong></div><div class="meta"><p>${p.town} · ${p.distance ? p.distance.toFixed(1)+" km" : p.county}</p><button class="solid" data-chat="${p.id}">Open chat</button></div></article>`).join("") || "<p>Like a few profiles on Discover.</p>"}</div>
+  </section>`;
+}
+function chat() {
+  const id = state.activeChat || state.matches[0];
+  const person = SEED.find(p => p.id === id);
+  if (!person) return `<section class="panel"><h2>No chat yet</h2><p>Match with someone first.</p></section>`;
+  const msgs = state.chats[id] || [];
+  return `<section class="panel">
+    <div class="kicker">Chat · demo, not live server</div>
+    <h2 style="font-size:32px">${person.name} · ${person.town}</h2>
+    <div class="chat-list">${msgs.map(m => `<div class="bubble ${m.from==="me"?"me":"them"}">${m.text}</div>`).join("")}</div>
+    <form id="chat-form" class="row" style="margin-top:12px">
+      <input name="text" placeholder="Andika ujumbe..." required style="flex:1" />
+      <button class="solid" type="submit">Send</button>
+    </form>
+    <p class="note">Replies are scripted so you can feel the flow. Production would use a realtime service.</p>
+  </section>`;
+}
+function profile() {
+  const u = state.user;
+  return `<section class="panel" style="max-width:720px">
+    <div class="kicker">Your profile</div>
+    <h2 style="font-size:36px">${u.name}, ${u.age}</h2>
+    <p>${u.bio}</p>
+    <div class="tags">${(u.interests||[]).map(i=>`<span class="tag">${i}</span>`).join("")}<span class="tag">${u.mode}</span><span class="tag">${u.county}</span></div>
+    <p class="note" style="margin-top:12px">${u.photo || "No photo uploaded in this demo."}</p>
+    <div class="warn">Premium (${state.premium ? "active" : "off"}): see who liked you, wider radius, and an M-Pesa checkout placeholder. Paybill demo only — no charge.</div>
+    <button class="solid" id="premium" style="margin-top:10px">${state.premium ? "Premium active" : "Unlock with M-Pesa demo"}</button>
+  </section>`;
+}
+function safety() {
+  return `<section class="panel" style="max-width:720px">
+    <div class="kicker">Safety</div>
+    <h2 style="font-size:36px">Report and meet safely</h2>
+    <ul>
+      <li>First meetings in public: Java, a mall, or a busy cafe.</li>
+      <li>Do not share your exact estate pin until you trust the person.</li>
+      <li>Tuungane will never ask you to send money. Treat payment requests as a scam.</li>
+    </ul>
+    <form id="report" class="form">
+      <label>Who<select name="who">${SEED.map(p=>`<option value="${p.id}">${p.name} · ${p.town}</option>`).join("")}</select></label>
+      <label>What happened<textarea name="reason" required rows="3"></textarea></label>
+      <button class="solid" type="submit">Submit report</button>
+    </form>
+    <p class="note">${state.reports.length} report(s) saved on this device.</p>
+  </section>`;
+}
+function bind() {
+  document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => go(b.dataset.go));
+  document.querySelectorAll("[data-like]").forEach(b => b.onclick = () => like(b.dataset.like));
+  document.querySelectorAll("[data-pass]").forEach(b => b.onclick = () => pass(b.dataset.pass));
+  document.querySelectorAll("[data-chat]").forEach(b => b.onclick = () => { state.activeChat = b.dataset.chat; go("chat"); });
+  const form = document.getElementById("join-form");
+  if (form) form.onsubmit = (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    if (+d.age < 18) return toast("You must be 18+");
+    const coords = countyCoords(d.county);
+    state.user = {
+      ...d, age: +d.age,
+      interests: d.interests.split(",").map(s => s.trim()).filter(Boolean),
+      lat: coords.lat, lng: coords.lng, locSource: "County centre — tap Refresh GPS",
+      filters: {county:"Any", tribe:"Any", religion:"Any", mode:"All", minAge:18, maxAge:40, km:80}
+    };
+    save();
+    toast("Profile saved. Asking for location…");
+    go("discover");
+    locate();
+  };
+  const filters = document.getElementById("filters");
+  if (filters) filters.onsubmit = (e) => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(filters));
+    state.user.filters = {...d, minAge:+d.minAge, maxAge:+d.maxAge, km:+d.km};
+    save(); render();
+  };
+  const chat = document.getElementById("chat-form");
+  if (chat) chat.onsubmit = (e) => {
+    e.preventDefault();
+    const id = state.activeChat || state.matches[0];
+    const text = new FormData(chat).get("text");
+    state.chats[id] = state.chats[id] || [];
+    state.chats[id].push({from:"me", text});
+    state.chats[id].push({from:"them", text:"Sawa, that sounds good. We can meet somewhere public this weekend if you're free."});
+    save(); render();
+  };
+  const report = document.getElementById("report");
+  if (report) report.onsubmit = (e) => {
+    e.preventDefault();
+    state.reports.push(Object.fromEntries(new FormData(report)));
+    save(); toast("Report saved on this device");
+    render();
+  };
+  const loc = document.getElementById("locate");
+  if (loc) loc.onclick = locate;
+  document.querySelectorAll("#premium").forEach(b => b.onclick = () => {
+    state.premium = !state.premium;
+    if (state.premium) state.user.filters.km = 250;
+    save(); toast(state.premium ? "Premium demo on. No M-Pesa charge." : "Premium off");
+    render();
+  });
+}
+function countyCoords(county) {
+  const map = {
+    Nairobi:{lat:-1.2864,lng:36.8172}, Mombasa:{lat:-4.0435,lng:39.6682}, Kisumu:{lat:-0.0917,lng:34.7680},
+    Kiambu:{lat:-1.1714,lng:36.8356}, Nakuru:{lat:-0.3031,lng:36.0800}, "Uasin Gishu":{lat:0.5143,lng:35.2698},
+    Nyeri:{lat:-0.4371,lng:36.9580}, Machakos:{lat:-1.5177,lng:37.2634}, Kilifi:{lat:-3.6305,lng:39.8499}, Kakamega:{lat:0.2827,lng:34.7519}
+  };
+  return map[county] || map.Nairobi;
+}
+function locate() {
+  if (!navigator.geolocation) return toast("GPS not available");
+  navigator.geolocation.getCurrentPosition(pos => {
+    state.user.lat = pos.coords.latitude;
+    state.user.lng = pos.coords.longitude;
+    state.user.locSource = "Browser GPS";
+    save(); toast("Location updated");
+    render();
+  }, () => toast("Location denied. Using county centre."), {enableHighAccuracy:true, timeout:8000});
+}
+render();
+</script>
+</body>
+</html>
